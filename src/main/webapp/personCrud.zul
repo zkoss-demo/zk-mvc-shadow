@@ -1,29 +1,23 @@
-<zk xmlns:sh="shadow">
-	<div id="crud" apply="zk.example.CollectionTemplateComposer">
-		<button id="addPerson" label="add person" forward="crud.onCreateItem"/>
-		<template name="readonly">
-			<div>
-				<label value="${each.name}"/>
-				<label value="${each.age}"/>
-				<sh:apply template="crudReadonlyControls" item="${each}" crudRoot="crud"/>
-			</div>
-		</template>
-		<template name="editable">
-			<div forward="onOK=crud.onUnselect(${each})">
-				<textbox value="${each.name}" forward="onChange=crud.onChangeName(${each})"/>
-				<intbox value="${each.age}" forward="onChange=crud.onChangeAge(${each})"/>
-				<sh:apply template="crudEditableControls" item="${each}" crudRoot="crud"/>
-			</div>
-		</template>
-		
-		<template name="crudReadonlyControls">
-			<button tooltiptext="edit" iconSclass="z-icon-edit" forward="crud.onEditItem(${each})"/>
-		</template>
+<?component name="crud" templateURI="crudTemplate.zul" dynamicValue="true"?>
 
-		<template name="crudEditableControls">
-			<button tooltiptext="save" iconSclass="z-icon-save" forward="crudRoot.onSaveItem(${item})"/>
-			<button tooltiptext="cancel" iconSclass="z-icon-times" forward="crudRoot.onCancelItem(${item})"/>
-			<button tooltiptext="delete" iconSclass="z-icon-trash" forward="crudRoot.onDeleteItem(${item})"/>
-		</template>
+<zk xmlns:sh="shadow">
+	<style>
+		.personItem {
+			display: block;
+			vertical-align: middle;
+		}
+		.readonly {
+			border: 1px solid #CCA;
+			background-color:  #EEC;
+			padding: 5px;
+		}
+		.editable {
+			border: 1px solid #88F;
+			background-color:  #CDF;
+			padding: 2px;
+		}
+	</style>
+	<div apply="zk.example.CollectionTemplateComposer">
+		<crud id="crudApply"/>
 	</div>
 </zk>

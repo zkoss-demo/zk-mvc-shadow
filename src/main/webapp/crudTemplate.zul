@@ -1,0 +1,19 @@
+<zk xmlns:sh="shadow">
+	<div id="crudRoot">
+		<sh:apply template="crudHeaderControls"/>
+	</div>
+
+	<template name="crudHeaderControls">
+		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crudRoot.onCreateItem"/>
+	</template>
+	
+	<template name="crudReadonlyControls">
+		<a tooltiptext="edit" iconSclass="z-icon-edit" forward="crudRoot.onEditItem(${each})"/>
+	</template>
+
+	<template name="crudEditableControls">
+		<button tooltiptext="save" iconSclass="z-icon-check" forward="crudRoot.onSaveItem(${item})"/>
+		<button tooltiptext="cancel" iconSclass="z-icon-times" forward="crudRoot.onCancelItem(${item})"/>
+		<button tooltiptext="delete" iconSclass="z-icon-trash" forward="crudRoot.onDeleteItem(${item})"/>
+	</template>
+</zk>

@@ -1,47 +1,81 @@
 package zk.example;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import org.zkoss.bind.proxy.FormProxyObject;
 import org.zkoss.bind.proxy.ProxyHelper;
+import org.zkoss.xel.util.SimpleResolver;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Templates;
 import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.ForwardEvent;
+import org.zkoss.zk.ui.util.Template;
 import org.zkoss.zul.ListModelList;
-import org.zkoss.zul.impl.InputElement;
+import org.zkoss.zuti.zul.Apply;
+import org.zkoss.zuti.zul.CollectionTemplate;
+import org.zkoss.zuti.zul.CollectionTemplateResolver;
 
 public class CrudHandler<T> {
 	private Set<T> editedItems = new HashSet<>();
 	private ListModelList<T> items;
+	private Component crudApply;
 	private Component crudRoot;
-	public CrudHandler(Component crudRoot, ListModelList<T> items, Supplier<T> creator) {
-		this.crudRoot = crudRoot;
+	
+	public CrudHandler(Apply crudApply, ListModelList<T> items, Supplier<T> newItemSupplier) {
+		this.crudApply = crudApply;
+		this.crudRoot = crudApply.getFirstInsertion();
 		this.items = items;
-		crudRoot.addEventListener("onCreateItem", e -> create(creator));
+		crudRoot.addEventListener("onCreateItem", e -> create(newItemSupplier));
 		crudRoot.addEventListener("onEditItem", e -> edit(toItem(e)));
 		crudRoot.addEventListener("onSaveItem", e -> save(toItem(e)));
 		crudRoot.addEventListener("onCancelItem", e -> cancel(toItem(e)));
 		crudRoot.addEventListener("onDeleteItem", e -> items.remove(toItem(e)));
 	}
+	
+	public void render() {
+		CollectionTemplate collectionTemplate = new CollectionTemplate(true);
+		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
+		collectionTemplate.setModel(items);
+		collectionTemplate.apply(crudRoot);
+	}
 
-	protected void create(Supplier<T> creator) {
+	public boolean isEdited(T item) {
+		return editedItems.contains(item);
+	}
+
+	public Template templateForItem(T item) {
+		return Templates.lookup(crudApply, isEdited(item) ? "editable" : "readonly");
+	}
+	
+	public  Component[] createReadonlyControls(T item) {
+		return createCrudControls(item, "crudReadonlyControls");
+	}
+	
+	public  Component[] createEditableControls(T item) {
+		return createCrudControls(item, "crudEditableControls");
+	}
+
+	private Component[] createCrudControls(T item, String templateName) {
+		return Templates.lookup(crudApply, templateName).create(null, null, new SimpleResolver(Collections.singletonMap("item", item)), null);
+	}
+	
+	private void create(Supplier<T> creator) {
 		T item = creator.get();
 		items.add(item);
 		startEdit(item);
 	}
 
-	protected void edit(T item) {
+	private void edit(T item) {
 		startEdit(item);
 	}
 
-	protected void save(T itemProxy) {
+	public void save(T itemProxy) {
 		finishEdit(itemProxy, true);
 	}
 	
-	protected void cancel(T itemProxy) {
+	public void cancel(T itemProxy) {
 		finishEdit(itemProxy, false);
 	}
 
@@ -58,24 +92,13 @@ public class CrudHandler<T> {
 		} else {
 			itemFormProxy.resetFromOrigin();
 		}
+		@SuppressWarnings("unchecked")
 		T originalItem = (T) itemFormProxy.getOriginObject();
 		editedItems.remove(itemProxy);
 		items.set(items.indexOf(itemProxy), originalItem);
 	}
 	
-	public boolean isSelected(T item) {
-		return editedItems.contains(item);
-	}
-	
-	public <V>boolean listen(String eventName, BiConsumer<T, V> consumer) {
-		return crudRoot.addEventListener(eventName, event -> applyChange(consumer, (ForwardEvent)event));
-	}
-	
-	private <V> void applyChange(BiConsumer<T, V> consumer, ForwardEvent event) {
-		InputElement inputElement = (InputElement)event.getOrigin().getTarget();
-		consumer.accept(toItem(event), (V)inputElement.getRawValue());
-	}
-
+	@SuppressWarnings("unchecked")
 	protected T toItem(Event event) {
 		return (T)event.getData();
 	}
