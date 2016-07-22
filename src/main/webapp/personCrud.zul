@@ -1,4 +1,4 @@
-<?component name="crud" templateURI="crudTemplate.zul" dynamicValue="true"?>
+<?component name="crud" class="zk.example.Crud" templateURI="crudTemplate.zul" dynamicValue="true"?>
 
 <zk xmlns:sh="shadow">
 	<style>
@@ -17,7 +17,22 @@
 			padding: 2px;
 		}
 	</style>
-	<div apply="zk.example.CollectionTemplateComposer">
-		<crud id="crudApply"/>
+	
+	<div id="main" apply="zk.example.PersonCrudComposer">
+		<sh:crud id="personCrud">
+			<template name="readonly">
+				<div sclass="personItem readonly">
+					<label value="${each.name}, ${each.age}"/>
+					<sh:apply template="crudReadonlyControls"/>
+				</div>
+			</template>
+			<template name="editable">
+				<div sclass="personItem editable" forward="onOK=crud.onSaveItem(${each}), onCancel=crud.onCancelItem(${each})">
+					<textbox value="${each.name}" forward="onChange=main.onNameChange(${each})"/>
+					<intbox value="${each.age}" forward="onChange=main.onAgeChange(${each})"/>
+					<sh:apply template="crudEditableControls" item="${each}"/>
+				</div>
+			</template>
+		</sh:crud>
 	</div>
 </zk>

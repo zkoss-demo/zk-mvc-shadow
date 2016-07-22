@@ -1,6 +1,6 @@
 package zk.example;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -11,42 +11,47 @@ import org.zkoss.xel.util.SimpleResolver;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Templates;
 import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zk.ui.util.Template;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zuti.zul.Apply;
 import org.zkoss.zuti.zul.CollectionTemplate;
 import org.zkoss.zuti.zul.CollectionTemplateResolver;
 
-public class CrudHandler<T> {
-	private Set<T> editedItems = new HashSet<>();
-	private ListModelList<T> items;
-	private Component crudApply;
+public class Crud<T> extends Apply implements AfterCompose {
+	private static final long serialVersionUID = 1L;
+
 	private Component crudRoot;
+	private Set<T> editedItems = new HashSet<>();
+	private Supplier<T> newItemSupplier;
+	private ListModelList<T> items;
 	
-	public CrudHandler(Apply crudApply, ListModelList<T> items, Supplier<T> newItemSupplier) {
-		this.crudApply = crudApply;
-		this.crudRoot = crudApply.getFirstInsertion();
-		this.items = items;
+	@Override
+	public void afterCompose() {
+		super.afterCompose();
+		this.crudRoot = this.getFirstInsertion();
 		crudRoot.addEventListener("onCreateItem", e -> create(newItemSupplier));
 		crudRoot.addEventListener("onEditItem", e -> edit(toItem(e)));
 		crudRoot.addEventListener("onSaveItem", e -> save(toItem(e)));
 		crudRoot.addEventListener("onCancelItem", e -> cancel(toItem(e)));
 		crudRoot.addEventListener("onDeleteItem", e -> items.remove(toItem(e)));
 	}
-	
-	public void render() {
+
+	public void init(ListModelList<T> items, Supplier<T> newItemSupplier) {
+		this.items = items;
+		this.newItemSupplier = newItemSupplier;
 		CollectionTemplate collectionTemplate = new CollectionTemplate(true);
 		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
 		collectionTemplate.setModel(items);
 		collectionTemplate.apply(crudRoot);
 	}
-
+	
 	public boolean isEdited(T item) {
 		return editedItems.contains(item);
 	}
 
 	public Template templateForItem(T item) {
-		return Templates.lookup(crudApply, isEdited(item) ? "editable" : "readonly");
+		return Templates.lookup(this, isEdited(item) ? "editable" : "readonly");
 	}
 	
 	public  Component[] createReadonlyControls(T item) {
@@ -58,7 +63,10 @@ public class CrudHandler<T> {
 	}
 
 	private Component[] createCrudControls(T item, String templateName) {
-		return Templates.lookup(crudApply, templateName).create(null, null, new SimpleResolver(Collections.singletonMap("item", item)), null);
+		HashMap<String, Object> params = new HashMap<>(2);
+		params.put("item", item);
+		params.put("crud", crudRoot);
+		return Templates.lookup(this, templateName).create(null, null, new SimpleResolver(params), null);
 	}
 	
 	private void create(Supplier<T> creator) {
