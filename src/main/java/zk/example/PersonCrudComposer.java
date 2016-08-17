@@ -9,6 +9,7 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.ListModelList;
 
 import zk.example.crud.Crud;
+import zk.example.crud.CrudModel;
 import zk.example.crud.CrudUtil;
 
 public class PersonCrudComposer extends SelectorComposer<Component> {
@@ -23,7 +24,7 @@ public class PersonCrudComposer extends SelectorComposer<Component> {
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
 		initPersonModel();
-		personCrud.init(personModel, Person::new);
+		personCrud.setModel(new CrudModel<Person>(personModel, Person::new));
 		
 		CrudUtil.handleFieldChange("onNameChange", comp, Person::setName);
 		CrudUtil.handleFieldChange("onAgeChange", comp, Person::setAge);

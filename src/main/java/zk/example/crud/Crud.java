@@ -1,32 +1,25 @@
 package zk.example.crud;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
-import org.zkoss.bind.proxy.FormProxyObject;
-import org.zkoss.bind.proxy.ProxyHelper;
 import org.zkoss.xel.util.SimpleResolver;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Templates;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zk.ui.util.Template;
-import org.zkoss.zul.ListModelList;
 import org.zkoss.zuti.zul.Apply;
 import org.zkoss.zuti.zul.CollectionTemplate;
 import org.zkoss.zuti.zul.CollectionTemplateResolver;
-import org.zkoss.zuti.zul.ForEach;
 
 public class Crud<T> extends Apply implements AfterCompose {
 	private static final long serialVersionUID = 1L;
 
 	private Component crudRoot;
-	private Set<T> editedItems = new HashSet<>();
-	private Supplier<T> newItemSupplier;
-	private ListModelList<T> items;
+	private CrudModel<T> crudModel;
+
+	private CollectionTemplate collectionTemplate;
 	
 	public Crud() {
 		this.setDynamicValue(true);
@@ -36,32 +29,32 @@ public class Crud<T> extends Apply implements AfterCompose {
 	public void afterCompose() {
 		super.afterCompose();
 		this.crudRoot = this.getFirstInsertion();
-		crudRoot.addEventListener("onCreateItem", e -> create(newItemSupplier));
-		crudRoot.addEventListener("onEditItem", e -> edit(toItem(e)));
-		crudRoot.addEventListener("onSaveItem", e -> save(toItem(e)));
-		crudRoot.addEventListener("onCancelItem", e -> cancel(toItem(e)));
-		crudRoot.addEventListener("onDeleteItem", e -> delete(toItem(e)));
+		crudRoot.addEventListener("onCreateItem", e -> crudModel.create());
+		crudRoot.addEventListener("onEditItem", e -> crudModel.edit(toItem(e)));
+		crudRoot.addEventListener("onSaveItem", e -> crudModel.save(toItem(e)));
+		crudRoot.addEventListener("onCancelItem", e -> crudModel.cancel(toItem(e)));
+		crudRoot.addEventListener("onDeleteItem", e -> crudModel.delete(toItem(e)));
+
+		collectionTemplate = new CollectionTemplate(true);
+		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
 	}
 
-	public void init(ListModelList<T> items, Supplier<T> newItemSupplier) {
-		this.items = items;
-		this.newItemSupplier = newItemSupplier;
-		CollectionTemplate collectionTemplate = new CollectionTemplate(true);
-		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
-		collectionTemplate.setModel(items);
-		collectionTemplate.apply(this.crudRoot.query("#crudItems"));
+	public CrudModel<T> getModel() {
+		return this.crudModel;
 	}
 	
+	public void setModel(CrudModel<T> crudModel) {
+		this.crudModel = crudModel;
+		collectionTemplate.setModel(crudModel.getItemsModel());
+		collectionTemplate.apply(this.crudRoot.query("#crudItems"));
+	}
+
 	public void setTemplateRenderFunction(String templateName, BiFunction<T, Crud<T>, Component> crudRenderFunction) {
 		this.setTemplate(templateName, (TemplateRenderFunction<T>)(item -> crudRenderFunction.apply(item, this)));
 	}
 	
-	public boolean isEdited(T item) {
-		return editedItems.contains(item);
-	}
-
 	public Template templateForItem(T item) {
-		return Templates.lookup(this, isEdited(item) ? "editable" : "readonly");
+		return Templates.lookup(this, crudModel.isEdited(item) ? "editable" : "readonly");
 	}
 	
 	public  Component[] createReadonlyControls(T item) {
@@ -77,47 +70,6 @@ public class Crud<T> extends Apply implements AfterCompose {
 		params.put("item", item);
 		params.put("crud", crudRoot);
 		return Templates.lookup(this, templateName).create(null, null, new SimpleResolver(params), null);
-	}
-	
-	private void create(Supplier<T> creator) {
-		T item = creator.get();
-		items.add(item);
-		startEdit(item);
-	}
-
-	private void edit(T item) {
-		startEdit(item);
-	}
-
-	public void save(T itemProxy) {
-		finishEdit(itemProxy, true);
-	}
-	
-	public void cancel(T itemProxy) {
-		finishEdit(itemProxy, false);
-	}
-
-	public void delete(T item) {
-		items.remove(item);
-	}
-	
-	private void startEdit(T originalItem) {
-		T itemProxy = ProxyHelper.createProxyIfAny(originalItem);
-		editedItems.add(itemProxy);
-		items.set(items.indexOf(originalItem), itemProxy);
-	}
-	
-	private void finishEdit(T itemProxy, boolean saveChanges) {
-		FormProxyObject itemFormProxy = (FormProxyObject)itemProxy;
-		if(saveChanges) {
-			itemFormProxy.submitToOrigin(null);
-		} else {
-			itemFormProxy.resetFromOrigin();
-		}
-		@SuppressWarnings("unchecked")
-		T originalItem = (T) itemFormProxy.getOriginObject();
-		editedItems.remove(itemProxy);
-		items.set(items.indexOf(itemProxy), originalItem);
 	}
 	
 	@SuppressWarnings("unchecked")

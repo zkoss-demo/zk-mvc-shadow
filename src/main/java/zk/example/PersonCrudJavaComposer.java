@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.zkoss.zk.ui.Component;
-import org.zkoss.zk.ui.select.SelectorComposer;
+import org.zkoss.zk.ui.util.Composer;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Label;
@@ -13,27 +13,25 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Textbox;
 
 import zk.example.crud.Crud;
+import zk.example.crud.CrudModel;
 
-public class PersonCrudJavaComposer extends SelectorComposer<Component> {
+public class PersonCrudJavaComposer implements Composer<Component> {
 
-	private static final long serialVersionUID = 1L;
 	private ListModelList<Person> personModel;
 
 	private Crud<Person> personCrud;
 	
 	@Override
-	public void doAfterCompose(Component comp) throws Exception {
-		super.doAfterCompose(comp);
+	public void doAfterCompose(Component comp) {
 		personCrud = new Crud<>();
 		personCrud.setTemplateURI("/WEB-INF/zul/crud/crudTemplate.zul");
 		personCrud.setShadowHost(comp, null);
 		personCrud.afterCompose();
-
-		initPersonModel();
-
 		personCrud.setTemplateRenderFunction("readonly", this::renderReadonlyPerson);
 		personCrud.setTemplateRenderFunction("editable", this::renderEditablePerson);
-		personCrud.init(personModel, Person::new);
+
+		initPersonModel();
+		personCrud.setModel(new CrudModel<>(personModel, Person::new));
 	}
 	
 	private void initPersonModel() {
@@ -65,8 +63,8 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		nameBox.addEventListener("onChange", (event) -> person.setName(nameBox.getValue()));
 		ageBox.addEventListener("onChange", (event) -> person.setAge(ageBox.getValue()));
 		
-		div.addEventListener("onOK", (event) -> crud.save(person));
-		div.addEventListener("onCancel", (event) -> crud.cancel(person));
+		div.addEventListener("onOK", (event) -> crud.getModel().save(person));
+		div.addEventListener("onCancel", (event) -> crud.getModel().cancel(person));
 		
 		Stream.of(crud.createEditableControls(person)).forEach(div::appendChild);
 		return div;

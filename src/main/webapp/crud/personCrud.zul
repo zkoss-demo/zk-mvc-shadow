@@ -4,7 +4,7 @@
 	<div id="main" apply="zk.example.PersonCrudComposer">
 		<sh:crud id="personCrud">
 			<template name="readonly">
-				<div sclass="personItem readonly">
+				<div sclass="personItem readonly" forward="onDoubleClick=crud.onEditItem(${each})">
 					<label value="${each.name}, ${each.age}"/>
 					<sh:apply template="crudReadonlyControls" item="${each}"/>
 				</div>
