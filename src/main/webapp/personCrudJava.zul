@@ -1,5 +1,3 @@
-<?component name="crud" class="zk.example.Crud" templateURI="crudTemplate.zul" dynamicValue="true"?>
-
 <zk xmlns:sh="shadow">
 	<style>
 		.personItem {
@@ -18,7 +16,5 @@
 		}
 	</style>
 	
-	<div id="main" apply="zk.example.PersonCrudJavaComposer">
-		<sh:crud id="personCrud"/>
-	</div>
+	<div id="main" apply="zk.example.PersonCrudJavaComposer"/>
 </zk>

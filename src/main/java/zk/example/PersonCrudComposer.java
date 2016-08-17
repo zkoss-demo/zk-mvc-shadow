@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.zkoss.lang.Generics;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.ForwardEvent;
 import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.impl.InputElement;
@@ -26,6 +24,9 @@ public class PersonCrudComposer extends SelectorComposer<Component> {
 		super.doAfterCompose(comp);
 		initPersonModel();
 		personCrud.init(personModel, Person::new);
+		
+		handleFieldChange("onNameChange", Person::setName);
+		handleFieldChange("onAgeChange", Person::setAge);
 	}
 	
 	private void initPersonModel() {
@@ -35,22 +36,18 @@ public class PersonCrudComposer extends SelectorComposer<Component> {
 		persons.add(new Person("Martin", 48));
 		personModel = new ListModelList<>(persons);
 	}
-	
-	@Listen("onNameChange=#main") 
-	public void onNameChange(ForwardEvent event) {
-		updateField(event, Person::setName);
+
+	private <T, V>void handleFieldChange(String eventName, BiConsumer<T, V> setter) {
+		this.getSelf().addEventListener(eventName, (ForwardEvent event) -> updateField(event, setter));
 	}
 	
-	@Listen("onAgeChange=#main") 
-	public void onAgeChange(ForwardEvent event) {
-		updateField(event, Person::setAge);
-	}
-	
-	private <T>void updateField(ForwardEvent event, BiConsumer<Person, T> setter) {
-		Person person = (Person)event.getData();
+	private <T, V>void updateField(ForwardEvent event, BiConsumer<T, V> setter) {
 		InputElement inputElement = (InputElement) event.getOrigin().getTarget();
-		T value = Generics.cast(inputElement.getRawValue());
-		setter.accept(person, (T)value);
+		@SuppressWarnings("unchecked")
+		V value = (V)(inputElement.getRawValue());
+		@SuppressWarnings("unchecked")
+		T bean = (T)event.getData();
+		setter.accept(bean, value);
 	}
 	
 }

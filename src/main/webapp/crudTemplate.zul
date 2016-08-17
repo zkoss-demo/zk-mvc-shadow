@@ -10,6 +10,7 @@
 	
 	<template name="crudReadonlyControls">
 		<a tooltiptext="edit" iconSclass="z-icon-edit" forward="crud.onEditItem(${each})"/>
+		<a tooltiptext="delete" iconSclass="z-icon-trash" forward="crud.onDeleteItem(${item})"/>
 	</template>
 
 	<template name="crudEditableControls">

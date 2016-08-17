@@ -1,4 +1,4 @@
-<?component name="crud" class="zk.example.Crud" templateURI="crudTemplate.zul" dynamicValue="true"?>
+<?component name="crud" class="zk.example.Crud"?>
 
 <zk xmlns:sh="shadow">
 	<style>

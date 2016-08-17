@@ -2,15 +2,10 @@ package zk.example;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import org.zkoss.xel.VariableResolver;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.SelectorComposer;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zk.ui.util.Composer;
-import org.zkoss.zk.ui.util.Template;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Intbox;
 import org.zkoss.zul.Label;
@@ -22,16 +17,19 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 	private static final long serialVersionUID = 1L;
 	private ListModelList<Person> personModel;
 
-	@Wire("::shadow#personCrud")
 	private Crud<Person> personCrud;
-
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
+		personCrud = new Crud<>();
+		personCrud.setShadowHost(comp, null);
+		personCrud.afterCompose();
 
 		initPersonModel();
-		personCrud.setTemplate("readonly", (PersonTemplate)(this::readonlyPerson));
-		personCrud.setTemplate("editable", (PersonTemplate)(this::editablePerson));
+
+		personCrud.setTemplateRenderFunction("readonly", this::renderReadonlyPerson);
+		personCrud.setTemplateRenderFunction("editable", this::renderEditablePerson);
 		personCrud.init(personModel, Person::new);
 	}
 	
@@ -43,7 +41,7 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		personModel = new ListModelList<>(persons);
 	} 
 
-	private Div readonlyPerson(Person person) {
+	private Div renderReadonlyPerson(Person person) {
 		Div div = new Div();
 		div.setSclass("personItem readonly");
 		div.appendChild(new Label(person.getName() + ", " + person.getAge()));
@@ -52,7 +50,7 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		return div;
 	}
 	
-	private Div editablePerson(Person person) {
+	private Div renderEditablePerson(Person person) {
 		Div div = new Div();
 		div.setSclass("personItem editable");
 		Textbox nameBox = new Textbox(person.getName());
@@ -69,19 +67,5 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		
 		Stream.of(personCrud.createEditableControls(person)).forEach(div::appendChild);
 		return div;
-	}
-	
-	interface PersonTemplate extends Template {
-		Component render(Person person);
-		@Override
-		default  Component[] create(Component parent, Component insertBefore, VariableResolver resolver, @SuppressWarnings("rawtypes") Composer composer) {
-			Component personComp = render((Person)resolver.resolveVariable("each"));
-			parent.insertBefore(personComp, insertBefore);
-			return new Component[] {personComp};
-		}
-		@Override
-		default Map<String, Object> getParameters() {
-			return null;
-		}
 	}
 }

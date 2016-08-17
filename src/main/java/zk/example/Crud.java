@@ -26,6 +26,11 @@ public class Crud<T> extends Apply implements AfterCompose {
 	private Supplier<T> newItemSupplier;
 	private ListModelList<T> items;
 	
+	public Crud() {
+		this.setTemplateURI("crudTemplate.zul");
+		this.setDynamicValue(true);
+	}
+	
 	@Override
 	public void afterCompose() {
 		super.afterCompose();
@@ -44,6 +49,10 @@ public class Crud<T> extends Apply implements AfterCompose {
 		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
 		collectionTemplate.setModel(items);
 		collectionTemplate.apply(crudRoot);
+	}
+	
+	public void setTemplateRenderFunction(String templateName, TemplateRenderFunction<T, Component> renderFunction) {
+		this.setTemplate(templateName, renderFunction);
 	}
 	
 	public boolean isEdited(T item) {
