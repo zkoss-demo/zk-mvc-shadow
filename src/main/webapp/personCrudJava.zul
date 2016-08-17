@@ -1,20 +1,4 @@
+<?style src="styles.css"?>
 <zk xmlns:sh="shadow">
-	<style>
-		.personItem {
-			display: block;
-			vertical-align: middle;
-		}
-		.readonly {
-			border: 1px solid #CCA;
-			background-color:  #EEC;
-			padding: 5px;
-		}
-		.editable {
-			border: 1px solid #88F;
-			background-color:  #CDF;
-			padding: 2px;
-		}
-	</style>
-	
 	<div id="main" apply="zk.example.PersonCrudJavaComposer"/>
 </zk>

@@ -12,6 +12,8 @@ import org.zkoss.zul.Label;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Textbox;
 
+import zk.example.crud.Crud;
+
 public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 
 	private static final long serialVersionUID = 1L;
@@ -23,6 +25,7 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
 		personCrud = new Crud<>();
+		personCrud.setTemplateURI("/WEB-INF/zul/crud/crudTemplate.zul");
 		personCrud.setShadowHost(comp, null);
 		personCrud.afterCompose();
 
@@ -41,16 +44,16 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		personModel = new ListModelList<>(persons);
 	} 
 
-	private Div renderReadonlyPerson(Person person) {
+	private Component renderReadonlyPerson(Person person, Crud<Person> crud) {
 		Div div = new Div();
 		div.setSclass("personItem readonly");
 		div.appendChild(new Label(person.getName() + ", " + person.getAge()));
 		
-		Stream.of(personCrud.createReadonlyControls(person)).forEach(div::appendChild);
+		Stream.of(crud.createReadonlyControls(person)).forEach(div::appendChild);
 		return div;
 	}
 	
-	private Div renderEditablePerson(Person person) {
+	private Div renderEditablePerson(Person person, Crud<Person> crud) {
 		Div div = new Div();
 		div.setSclass("personItem editable");
 		Textbox nameBox = new Textbox(person.getName());
@@ -62,10 +65,10 @@ public class PersonCrudJavaComposer extends SelectorComposer<Component> {
 		nameBox.addEventListener("onChange", (event) -> person.setName(nameBox.getValue()));
 		ageBox.addEventListener("onChange", (event) -> person.setAge(ageBox.getValue()));
 		
-		div.addEventListener("onOK", (event) -> personCrud.save(person));
-		div.addEventListener("onCancel", (event) -> personCrud.cancel(person));
+		div.addEventListener("onOK", (event) -> crud.save(person));
+		div.addEventListener("onCancel", (event) -> crud.cancel(person));
 		
-		Stream.of(personCrud.createEditableControls(person)).forEach(div::appendChild);
+		Stream.of(crud.createEditableControls(person)).forEach(div::appendChild);
 		return div;
 	}
 }

@@ -1,29 +1,12 @@
-<?component name="crud" class="zk.example.Crud"?>
-
+<?component name="crud" class="zk.example.crud.Crud" templateURI="/WEB-INF/zul/crud/crudTemplate.zul"?>
+<?style src="styles.css"?>
 <zk xmlns:sh="shadow">
-	<style>
-		.personItem {
-			display: block;
-			vertical-align: middle;
-		}
-		.readonly {
-			border: 1px solid #CCA;
-			background-color:  #EEC;
-			padding: 5px;
-		}
-		.editable {
-			border: 1px solid #88F;
-			background-color:  #CDF;
-			padding: 2px;
-		}
-	</style>
-	
 	<div id="main" apply="zk.example.PersonCrudComposer">
 		<sh:crud id="personCrud">
 			<template name="readonly">
 				<div sclass="personItem readonly">
 					<label value="${each.name}, ${each.age}"/>
-					<sh:apply template="crudReadonlyControls"/>
+					<sh:apply template="crudReadonlyControls" item="${each}"/>
 				</div>
 			</template>
 			<template name="editable">

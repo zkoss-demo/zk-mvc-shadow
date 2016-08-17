@@ -1,0 +1,31 @@
+<?component name="crud" class="zk.example.crud.Crud" templateURI="/WEB-INF/zul/crud/crudGridTemplate.zul"?>
+<?style src="styles.css"?>
+<zk xmlns:sh="shadow">
+	<div id="main" apply="zk.example.PersonCrudComposer">
+		<sh:crud id="personCrud">
+			<template name="columns">
+				<column label="Name"/>
+				<column label="Age"/>
+				<column label="Actions"/>
+			</template>
+			<template name="readonly">
+				<row forward="onDoubleClick=crud.onEditItem(${each})">
+					<label value="${each.name}"/> 
+					<label value="${each.age}"/>
+					<cell>
+						<sh:apply template="crudReadonlyControls" item="${each}"/>
+					</cell>
+				</row>
+			</template>
+			<template name="editable">
+				<row forward="onOK=crud.onSaveItem(${each}), onCancel=crud.onCancelItem(${each})">
+					<textbox value="${each.name}" forward="onChange=main.onNameChange(${each})"/>
+					<intbox value="${each.age}" forward="onChange=main.onAgeChange(${each})"/>
+					<cell>
+						<sh:apply template="crudEditableControls" item="${each}"/>
+					</cell>
+				</row>
+			</template>
+		</sh:crud>
+	</div>
+</zk>

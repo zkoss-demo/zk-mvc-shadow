@@ -1,0 +1,23 @@
+<zk xmlns:sh="shadow">
+	<nodom>
+		<custom-attributes crud="${self}"/>
+		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crud.onCreateItem"/>
+		<grid>
+			<columns>
+				<sh:apply template="columns"/>
+			</columns>
+			<rows id="crudItems"/>
+		</grid>
+	</nodom>
+
+	<template name="crudReadonlyControls">
+		<a tooltiptext="edit" iconSclass="z-icon-edit" forward="crud.onEditItem(${item})"/>
+		<a tooltiptext="delete" iconSclass="z-icon-trash" forward="crud.onDeleteItem(${item})"/>
+	</template>
+
+	<template name="crudEditableControls" >
+		<button tooltiptext="save" iconSclass="z-icon-check" forward="crud.onSaveItem(${item})"/>
+		<button tooltiptext="cancel" iconSclass="z-icon-times" forward="crud.onCancelItem(${item})"/>
+		<button tooltiptext="delete" iconSclass="z-icon-trash" forward="crud.onDeleteItem(${item})"/>
+	</template>
+</zk>

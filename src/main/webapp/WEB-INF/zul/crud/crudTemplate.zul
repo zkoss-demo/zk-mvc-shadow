@@ -1,19 +1,16 @@
 <zk xmlns:sh="shadow">
 	<div>
 		<custom-attributes crud="${self}"/>
-		<sh:apply template="crudHeaderControls"/>
+		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crud.onCreateItem"/>
+		<div id="crudItems"/>
 	</div>
 
-	<template name="crudHeaderControls">
-		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crud.onCreateItem"/>
-	</template>
-	
 	<template name="crudReadonlyControls">
-		<a tooltiptext="edit" iconSclass="z-icon-edit" forward="crud.onEditItem(${each})"/>
+		<a tooltiptext="edit" iconSclass="z-icon-edit" forward="crud.onEditItem(${item})"/>
 		<a tooltiptext="delete" iconSclass="z-icon-trash" forward="crud.onDeleteItem(${item})"/>
 	</template>
 
-	<template name="crudEditableControls">
+	<template name="crudEditableControls" >
 		<button tooltiptext="save" iconSclass="z-icon-check" forward="crud.onSaveItem(${item})"/>
 		<button tooltiptext="cancel" iconSclass="z-icon-times" forward="crud.onCancelItem(${item})"/>
 		<button tooltiptext="delete" iconSclass="z-icon-trash" forward="crud.onDeleteItem(${item})"/>

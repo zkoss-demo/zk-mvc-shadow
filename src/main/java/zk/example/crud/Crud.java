@@ -1,8 +1,9 @@
-package zk.example;
+package zk.example.crud;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import org.zkoss.bind.proxy.FormProxyObject;
@@ -17,6 +18,7 @@ import org.zkoss.zul.ListModelList;
 import org.zkoss.zuti.zul.Apply;
 import org.zkoss.zuti.zul.CollectionTemplate;
 import org.zkoss.zuti.zul.CollectionTemplateResolver;
+import org.zkoss.zuti.zul.ForEach;
 
 public class Crud<T> extends Apply implements AfterCompose {
 	private static final long serialVersionUID = 1L;
@@ -27,7 +29,6 @@ public class Crud<T> extends Apply implements AfterCompose {
 	private ListModelList<T> items;
 	
 	public Crud() {
-		this.setTemplateURI("crudTemplate.zul");
 		this.setDynamicValue(true);
 	}
 	
@@ -39,7 +40,7 @@ public class Crud<T> extends Apply implements AfterCompose {
 		crudRoot.addEventListener("onEditItem", e -> edit(toItem(e)));
 		crudRoot.addEventListener("onSaveItem", e -> save(toItem(e)));
 		crudRoot.addEventListener("onCancelItem", e -> cancel(toItem(e)));
-		crudRoot.addEventListener("onDeleteItem", e -> items.remove(toItem(e)));
+		crudRoot.addEventListener("onDeleteItem", e -> delete(toItem(e)));
 	}
 
 	public void init(ListModelList<T> items, Supplier<T> newItemSupplier) {
@@ -48,11 +49,11 @@ public class Crud<T> extends Apply implements AfterCompose {
 		CollectionTemplate collectionTemplate = new CollectionTemplate(true);
 		collectionTemplate.setTemplateResolver((CollectionTemplateResolver<T>)this::templateForItem);
 		collectionTemplate.setModel(items);
-		collectionTemplate.apply(crudRoot);
+		collectionTemplate.apply(this.crudRoot.query("#crudItems"));
 	}
 	
-	public void setTemplateRenderFunction(String templateName, TemplateRenderFunction<T, Component> renderFunction) {
-		this.setTemplate(templateName, renderFunction);
+	public void setTemplateRenderFunction(String templateName, BiFunction<T, Crud<T>, Component> crudRenderFunction) {
+		this.setTemplate(templateName, (TemplateRenderFunction<T>)(item -> crudRenderFunction.apply(item, this)));
 	}
 	
 	public boolean isEdited(T item) {
@@ -96,6 +97,10 @@ public class Crud<T> extends Apply implements AfterCompose {
 		finishEdit(itemProxy, false);
 	}
 
+	public void delete(T item) {
+		items.remove(item);
+	}
+	
 	private void startEdit(T originalItem) {
 		T itemProxy = ProxyHelper.createProxyIfAny(originalItem);
 		editedItems.add(itemProxy);

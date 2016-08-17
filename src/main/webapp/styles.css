@@ -1,0 +1,15 @@
+.personItem {
+	display: block;
+	vertical-align: middle;
+	width: 500px;
+}
+.personItem.readonly {
+	border: 1px solid #CCA;
+	background-color:  #EEC;
+	padding: 5px;
+}
+.personItem.editable {
+	border: 1px solid #88F;
+	background-color:  #CDF;
+	padding: 2px;
+}
