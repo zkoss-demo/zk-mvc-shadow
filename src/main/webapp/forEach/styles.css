@@ -1,0 +1,27 @@
+.nameTag {
+	display: inline-block;
+	position: relative;
+	background-color: DodgerBlue;
+	color: AliceBlue;
+	padding: 4px 7px;
+	border-radius: 5px;
+	margin: 2px 0;
+	font-weight: bold;
+}
+.nameTag > * {
+	font-size: 1.5em;
+}
+.nameTag > a {
+	color: inherit;
+}
+.nameTag.z-dragged {
+	opacity: 0.50;
+}
+.nameTag.z-drag-over:before {
+	content: '\25B2';
+	position: absolute;
+	left: -0.6em;
+	top: 1.5em;
+	display: inline-block;
+	color: OrangeRed;
+}
