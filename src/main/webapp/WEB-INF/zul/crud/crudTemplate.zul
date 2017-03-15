@@ -1,8 +1,8 @@
 <zk xmlns:sh="shadow">
 	<div>
 		<custom-attributes crud="${self}"/>
-		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crud.onCreateItem"/>
 		<div id="crudItems"/>
+		<button tooltiptext="add" iconSclass="z-icon-plus" forward="crud.onCreateItem"/>
 	</div>
 
 	<template name="crudReadonlyControls">

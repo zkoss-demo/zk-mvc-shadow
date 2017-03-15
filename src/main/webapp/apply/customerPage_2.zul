@@ -1,0 +1,15 @@
+<zk>
+	<?style src="styles.css"?>
+    <div apply="zk.example.apply.CustomerComposer">
+    	<apply template="customerBox" label="Current Customer" customer="${currentCustomer}"/>
+    	<apply template="customerBox" label="Last Customer" customer="${lastCustomer}"/>
+    </div>
+    <template name="customerBox">
+        <div sclass="customerBox">
+        	${label}
+            <div>ID: ${customer.id}</div>
+            <div>Name: ${customer.name}</div>
+            <div>Status: ${customer.status}</div>
+        </div>
+    </template>
+</zk>

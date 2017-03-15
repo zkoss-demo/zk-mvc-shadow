@@ -1,0 +1,5 @@
+<zk>
+	<label value="These are the details for Customer: ${customerId}"/>
+	${param.uriparam}	
+	${arg.uriparam}	
+</zk>

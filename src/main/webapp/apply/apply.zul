@@ -1,0 +1,6 @@
+<zk>
+	<div>
+		<apply templateURI="customerDetails.zul?uriparam=abcd" customerId="123-via-apply"/>
+		<include src="customerDetails.zul?uriparam=abcd" customerId="123-via-include"/>
+	</div>
+</zk>

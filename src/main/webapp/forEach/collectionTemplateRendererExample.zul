@@ -1,19 +1,12 @@
 <?style src="styles.css"?>
 <zk xmlns:sh="shadow">
-	<groupbox width="450px" apply="zk.example.foreach.ForEachComposer" mold="3d">
+	<groupbox width="450px" apply="zk.example.foreach.CollectionTemplateRendererComposer" mold="3d">
 		<caption label="My Names (also draggable)">
 			<button forward="onSortAsc" iconSclass="z-icon-sort-alpha-asc"/>
 			<button forward="onSortDesc" iconSclass="z-icon-sort-alpha-desc"/>
 			<button forward="onClearAll" iconSclass="z-icon-user-times" tooltiptext="clear all"/>
 		</caption>
-		<div>
-			<sh:forEach id="namesList" var="name">
-				<span forward="onDrop=onDropName(${name})" sclass="nameTag" draggable="true" droppable="true"> 
-					<label value="${name}"/>
-					<a forward="onClick=onRemoveName(${name})" iconSclass="z-icon-times"/>
-				</span>
-			</sh:forEach>
-		</div>
+		<div id="namesContainer"/>
 		<textbox forward="onOK=onAddName" placeholder="New Name + ENTER"/>
 	</groupbox>
 </zk>

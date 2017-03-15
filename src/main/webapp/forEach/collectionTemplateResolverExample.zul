@@ -1,6 +1,6 @@
 <?style src="styles.css"?>
 <zk xmlns:sh="shadow">
-	<groupbox width="450px" apply="zk.example.foreach.CollectionTemplateComposer" mold="3d">
+	<groupbox width="450px" apply="zk.example.foreach.CollectionTemplateResolverComposer" mold="3d">
 		<caption label="My Names (also draggable)">
 			<button forward="onSortAsc" iconSclass="z-icon-sort-alpha-asc"/>
 			<button forward="onSortDesc" iconSclass="z-icon-sort-alpha-desc"/>
@@ -12,6 +12,12 @@
 					<custom-attributes name="${each}"/>
 					<label value="${each}"/>
 					<a forward="onClick=onRemoveName(${each})" iconSclass="z-icon-times"/>
+				</span>
+			</template>
+			<template name="nameTagNonDeletable">
+				<span forward="onDrop=onDropName(${each})" sclass="nameTag" draggable="true" droppable="true"> 
+					<custom-attributes name="${each}"/>
+					<label value="${each}"/>
 				</span>
 			</template>
 		</div>

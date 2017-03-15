@@ -1,0 +1,10 @@
+.customerBox {
+	width: 200px;
+	border: 1px solid LightSeaGreen;
+	background-color: LightCyan;
+	margin-bottom: 10px;
+}
+
+.customerBox > .z-label {
+	font-weight: bold;
+}

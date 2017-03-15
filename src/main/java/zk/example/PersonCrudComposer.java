@@ -21,13 +21,13 @@ public class PersonCrudComposer extends SelectorComposer<Component> {
 	private Crud<Person> personCrud;
 
 	@Override
-	public void doAfterCompose(Component comp) throws Exception {
-		super.doAfterCompose(comp);
+	public void doAfterCompose(Component main) throws Exception {
+		super.doAfterCompose(main);
 		initPersonModel();
 		personCrud.setModel(new CrudModel<Person>(personModel, Person::new));
 		
-		CrudUtil.handleFieldChange("onNameChange", comp, Person::setName);
-		CrudUtil.handleFieldChange("onAgeChange", comp, Person::setAge);
+		CrudUtil.handleFieldChange("onNameChange", main, Person::setName);
+		CrudUtil.handleFieldChange("onAgeChange", main, Person::setAge);
 	}
 	
 	private void initPersonModel() {

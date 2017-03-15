@@ -8,7 +8,7 @@ import org.zkoss.zk.ui.util.Composer;
 import org.zkoss.zk.ui.util.Template;
 
 @FunctionalInterface 
-interface TemplateRenderFunction<T> extends Template {
+public interface TemplateRenderFunction<T> extends Template {
 	Component render(T item);
 	@Override
 	default  Component[] create(Component parent, Component insertBefore, VariableResolver resolver, @SuppressWarnings("rawtypes") Composer composer) {

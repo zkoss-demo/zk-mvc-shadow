@@ -1,0 +1,13 @@
+<language-addon>
+	<addon-name>mvc-shadow</addon-name>
+	<version>1.0</version>
+	<language-name>xul/html</language-name>
+
+	<depends>zuti</depends>
+
+	<component>
+		<component-name>customerBox</component-name>
+		<template-uri>/WEB-INF/zul/apply/customerBox.zul</template-uri>
+	</component>
+
+</language-addon>

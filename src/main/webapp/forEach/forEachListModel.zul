@@ -1,0 +1,11 @@
+<zk>
+  <window id="main" border="normal" title="forEach with ListModel" apply="zk.example.foreach.NamesComposer">
+    <forEach items="${namesModel}">
+      <div>
+        <label value="${each}"/>
+        <a iconSclass="z-icon-times" forward="onClick=onRemoveName(${each})"/>
+      </div>
+    </forEach>
+    <button id="addBtn" label="Add new Name" />
+  </window>
+</zk>

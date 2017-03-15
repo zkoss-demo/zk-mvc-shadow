@@ -1,0 +1,7 @@
+<zk>
+	<?style src="styles.css"?>
+    <div apply="zk.example.apply.CustomerComposer">
+    	<customerBox label="Current Customer" customer="${currentCustomer}"/>
+    	<customerBox label="Last Customer" customer="${lastCustomer}"/>
+    </div>
+</zk>

@@ -1,0 +1,13 @@
+<zk>
+<!-- customerBox template
+	parameters: 
+	* label
+	* customer
+ -->
+	<div sclass="customerBox">
+		${label}
+		<div>ID: ${customer.id}</div>
+		<div>Name: ${customer.name}</div>
+		<div>Status: ${customer.status}</div>
+	</div>
+</zk>

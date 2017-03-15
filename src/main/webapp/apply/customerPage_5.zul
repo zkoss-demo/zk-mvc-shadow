@@ -1,0 +1,8 @@
+<?component name="customerBox" templateURI="/WEB-INF/zul/apply/customerBox.zul"?>
+<zk>
+	<?style src="styles.css"?>
+    <div apply="zk.example.apply.CustomerComposer">
+    	<customerBox label="Current Customer" customer="${currentCustomer}"/>
+    	<customerBox label="Last Customer" customer="${lastCustomer}"/>
+    </div>
+</zk>

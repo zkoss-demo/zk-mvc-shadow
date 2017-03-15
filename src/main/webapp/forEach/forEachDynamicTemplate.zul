@@ -1,0 +1,29 @@
+<zk>
+
+<zscript><![CDATA[
+	import zk.example.foreach.ConfigElement;
+	List someCollectionOfConfigElements = new ArrayList();
+	someCollectionOfConfigElements.add(new ConfigElement("aaa", true));
+	someCollectionOfConfigElements.add(new ConfigElement("bbb", false));
+	someCollectionOfConfigElements.add(new ConfigElement("ccc", true));
+]]></zscript>
+
+	<div onChangeConfigElementName='
+		event.getData().setName(event.getOrigin().getValue());
+    	Clients.log(event.getName() + ":" + event.getData())'>
+
+		<forEach items="${someCollectionOfConfigElements}" var="configElement">
+			<apply template="${configElement.editable ? 'editable' : 'readonly'}">
+				<template name="editable">
+					<textbox value="${configElement.name}" forward="onChange=onChangeConfigElementName(${configElement})" />
+					<separator />
+				</template>
+				<template name="readonly">
+					<label value="${configElement.name}" />
+					<separator />
+				</template>
+			</apply>
+		</forEach>
+
+	</div>
+</zk>
